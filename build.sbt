@@ -1,8 +1,8 @@
 import Dependencies._
 
-name := "play-ws-standalone-mock"
+name := "play-fake-ws-standalone"
 
-organization := "org.f100ded.play-ws-standalone-mock"
+organization := "org.f100ded.play-fake-ws-standalone"
 
 scalaVersion := Versions.scala
 
@@ -17,7 +17,7 @@ libraryDependencies ++= Seq(
 
 licenses := Seq("Apache 2.0 License" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"))
 
-homepage := Some(url("https://github.com/f100ded/play-ws-standalone-mock"))
+homepage := Some(url("https://github.com/f100ded/play-fake-ws-standalone"))
 
 publishTo := {
   if (isSnapshot.value) {
@@ -27,14 +27,16 @@ publishTo := {
   }
 }
 
+publishMavenStyle := true
+
 publishArtifact in Test := false
 
 pomIncludeRepository := (_ => false)
 
 pomExtra := {
   <scm>
-    <url>https://github.com/f100ded/play-ws-standalone-mock</url>
-    <connection>scm:git:git://github.com/f100ded/play-ws-standalone-mock.git</connection>
+    <url>https://github.com/f100ded/play-fake-ws-standalone</url>
+    <connection>scm:git:git://github.com/f100ded/play-fake-ws-standalone.git</connection>
   </scm>
     <developers>
       <developer>
@@ -44,3 +46,7 @@ pomExtra := {
       </developer>
     </developers>
 }
+
+useGpg := true
+
+usePgpKeyHex("7A198644")
