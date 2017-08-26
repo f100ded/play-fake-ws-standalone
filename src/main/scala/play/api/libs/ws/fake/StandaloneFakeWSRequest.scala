@@ -3,6 +3,7 @@ package play.api.libs.ws.fake
 import java.net.URI
 import java.util.Base64
 
+import akka.stream.Materializer
 import com.typesafe.scalalogging.LazyLogging
 import play.api.libs.ws._
 
@@ -18,7 +19,7 @@ case class StandaloneFakeWSRequest
   headers: Map[String, Seq[String]] = Map(),
   cookies: Seq[WSCookie] = Seq(),
   auth: Option[(String, String, WSAuthScheme)] = None
-) extends StandaloneWSRequest with LazyLogging {
+)(implicit mat: Materializer) extends StandaloneWSRequest with LazyLogging {
 
   override type Self = StandaloneWSRequest
   override type Response = StandaloneWSResponse
@@ -60,8 +61,8 @@ case class StandaloneFakeWSRequest
       this
   }
 
-  override def withHttpHeaders(headers: (String, String)*): Self = {
-    val newHeaders = headers.foldLeft(Map[String, Seq[String]]()) {
+  override def withHttpHeaders(h: (String, String)*): Self = {
+    val newHeaders = h.foldLeft(Map[String, Seq[String]]()) {
       case (acc, (name, value)) => acc + (name -> (value +: acc.getOrElse(name, Nil)))
     }
 
@@ -123,7 +124,7 @@ case class StandaloneFakeWSRequest
   override def execute(): Future[Response] = {
     logger.debug(s"WS: $method $url")
     val result = routes
-      .lift(FakeRequest(method, uri.toString, body, headers, cookies))
+      .lift(FakeRequest(method, uri.toString, BodyUtils.bodyAsBytes(body), headers, cookies))
       .getOrElse(throw new Exception(s"no route defined for $method $url"))
     Future.successful(new StandaloneFakeWSResponse(result))
   }
