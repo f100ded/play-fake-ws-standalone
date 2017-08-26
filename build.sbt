@@ -11,7 +11,8 @@ crossScalaVersions := Versions.crossScala
 scalacOptions ++= List("-unchecked", "-deprecation", "-encoding", "UTF-8")
 
 libraryDependencies ++= Seq(
-  Libraries.playWS % "provided",
+  Libraries.playWS,
+  Libraries.scalaLogging,
   Libraries.scalaTest % "test"
 )
 

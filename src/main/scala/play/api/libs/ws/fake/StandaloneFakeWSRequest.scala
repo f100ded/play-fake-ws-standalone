@@ -1,25 +1,24 @@
 package play.api.libs.ws.fake
 
 import java.net.URI
+import java.util.Base64
 
+import com.typesafe.scalalogging.LazyLogging
 import play.api.libs.ws._
 
-import scala.concurrent.duration.Duration
-import scala.concurrent.{ExecutionContext, Future, duration}
+import scala.concurrent.{Future, duration}
 
 case class StandaloneFakeWSRequest
 (
-  routes: PartialFunction[(String, String), Future[FakeResult]],
+  routes: PartialFunction[FakeRequest, FakeResult],
   method: String = "GET",
   url: String,
   queryString: Map[String, Seq[String]] = Map(),
   body: WSBody = EmptyBody,
   headers: Map[String, Seq[String]] = Map(),
   cookies: Seq[WSCookie] = Seq(),
-  auth: Option[(String, String, WSAuthScheme)] = None,
-  requestTimeout: Option[Int] = None,
-  calc: Option[WSSignatureCalculator] = None
-)(implicit ec: ExecutionContext) extends StandaloneWSRequest {
+  auth: Option[(String, String, WSAuthScheme)] = None
+) extends StandaloneWSRequest with LazyLogging {
 
   override type Self = StandaloneWSRequest
   override type Response = StandaloneWSResponse
@@ -47,10 +46,19 @@ case class StandaloneFakeWSRequest
 
   override def proxyServer: Option[WSProxyServer] = None
 
-  override def sign(calc: WSSignatureCalculator): Self = copy(calc = Some(calc))
+  override def sign(calc: WSSignatureCalculator): Self = {
+    logger.warn(s"Request signature is not supported in play-fake-standalone-mock. Skipping")
+    this
+  }
 
-  override def withAuth(username: String, password: String, scheme: WSAuthScheme): Self =
-    copy(auth = Some((username, password, scheme)))
+  override def withAuth(username: String, password: String, scheme: WSAuthScheme): Self = scheme match {
+    case WSAuthScheme.BASIC =>
+      val authorization = Base64.getMimeEncoder().encodeToString(s"$username:$password".getBytes("UTF-8"))
+      withHttpHeaders("Authorization" -> s"Basic: $authorization")
+    case unsupported =>
+      logger.warn(s"Auth scheme $unsupported is not supported in play-fake-standalone-mock. Skipping")
+      this
+  }
 
   override def withHttpHeaders(headers: (String, String)*): Self = {
     val newHeaders = headers.foldLeft(Map[String, Seq[String]]()) {
@@ -75,16 +83,15 @@ case class StandaloneFakeWSRequest
 
   override def withFollowRedirects(follow: Boolean): Self = this
 
-  override def withRequestTimeout(timeout: duration.Duration): Self = timeout match {
-    case Duration.Inf => copy(requestTimeout = None)
-    case d =>
-      val millis = d.toMillis
-      val withinInteger = millis >= 0 && millis <= Int.MaxValue
-      require(withinInteger, s"Request timeout must be between 0 and ${Int.MaxValue} milliseconds")
-      copy(requestTimeout = Some(millis.toInt))
+  override def withRequestTimeout(timeout: duration.Duration): Self = {
+    logger.warn(s"Request timeout is not supported in play-fake-standalone-mock. Skipping")
+    this
   }
 
-  override def withRequestFilter(filter: WSRequestFilter): Self = this
+  override def withRequestFilter(filter: WSRequestFilter): Self = {
+    logger.warn(s"Request filter is not supported in play-fake-standalone-mock. Skipping")
+    this
+  }
 
   override def withVirtualHost(vh: String): Self = this
 
@@ -113,17 +120,25 @@ case class StandaloneFakeWSRequest
 
   override def execute(method: String): Future[Response] = withMethod(method).execute()
 
-  override def execute(): Future[Response] = for {
-    result <- routes.lift((method, url)).getOrElse(throw new Exception(s"no route defined for $method $url"))
-  } yield new StandaloneFakeWSResponse(result)
+  override def execute(): Future[Response] = {
+    logger.debug(s"WS: $method $url")
+    val result = routes
+      .lift(FakeRequest(method, uri.toString, body, headers, cookies))
+      .getOrElse(throw new Exception(s"no route defined for $method $url"))
+    Future.successful(new StandaloneFakeWSResponse(result))
+  }
 
   override def stream(): Future[Response] = execute()
 
+  override def calc: Option[WSSignatureCalculator] = None
+
+  override def requestTimeout: Option[Int] = None
+
   private def withBodyAndContentType(wsBody: WSBody, contentType: String): Self = {
-    if (headers.contains("Content-Type")) {
-      withBody(wsBody)
+    if (headers.exists(_._1.equalsIgnoreCase("Content-Type"))) {
+      copy(body = wsBody)
     } else {
-      withBody(wsBody).withHttpHeaders("Content-Type" -> contentType)
+      copy(body = wsBody).addHttpHeaders("Content-Type" -> contentType)
     }
   }
 }
