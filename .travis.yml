@@ -12,6 +12,6 @@ jdk:
 jobs:
   include:
     - stage: coveralls
-      script: sbt coverage test coverageReport coveralls
+      script: sbt ++$TRAVIS_SCALA_VERSION coverage test coverageReport coveralls
       scala: 2.12.2
       jdk: oraclejdk8
