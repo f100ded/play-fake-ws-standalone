@@ -124,10 +124,12 @@ case class StandaloneFakeWSRequest
   override def execute(): Future[Response] = {
     logger.debug(s"WS: $method $url")
     val result = routes
-      .lift(FakeRequest(method, uri.toString, BodyUtils.bodyAsBytes(body), headers, cookies))
+      .lift(fakeRequest)
       .getOrElse(throw new Exception(s"no route defined for $method $url"))
     Future.successful(new StandaloneFakeWSResponse(result))
   }
+
+  lazy val fakeRequest: FakeRequest = FakeRequest(method, uri.toString, BodyUtils.bodyAsBytes(body), headers, cookies)
 
   override def stream(): Future[Response] = execute()
 
