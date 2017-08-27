@@ -1,6 +1,6 @@
 package play.api.libs.ws.fake
 
-trait RequestExtractors {
+trait FakeRequestExtractors {
 
   val GET = new RequestMethodExtractor("GET")
 
@@ -28,4 +28,4 @@ trait RequestExtractors {
   }
 }
 
-object RequestExtractors extends RequestExtractors
+object FakeRequestExtractors extends FakeRequestExtractors

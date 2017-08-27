@@ -3,7 +3,7 @@ package play.api.libs.ws.fake
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import play.api.libs.ws.DefaultWSCookie
-import play.api.libs.ws.fake.RequestExtractors._
+import play.api.libs.ws.fake.FakeRequestExtractors._
 
 import scala.concurrent.Await
 import scala.concurrent.duration._

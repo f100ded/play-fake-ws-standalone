@@ -11,10 +11,9 @@ crossScalaVersions := Versions.crossScala
 scalacOptions ++= List("-unchecked", "-deprecation", "-encoding", "UTF-8")
 
 libraryDependencies ++= Seq(
-  Libraries.playWS % "provided",
-  Libraries.scalaLogging,
-  Libraries.scalaTest % "test"
-)
+  Libraries.playWS % Provided,
+  Libraries.scalaLogging
+) ++ Libraries.specs2.map(_ % Test)
 
 licenses := Seq("Apache 2.0 License" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"))
 
