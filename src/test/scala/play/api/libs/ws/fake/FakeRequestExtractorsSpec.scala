@@ -45,7 +45,7 @@ class FakeRequestExtractorsSpec extends Specification {
   "string interpolation" should {
     "extract a variable from FakeRequest url" in {
       FakeRequest("GET", "http://localhost/stores/123") match {
-        case url"http://localhost/stores/$id" => id must beEqualTo(id)
+        case url"http://localhost/stores/$id" => id must beEqualTo("123")
       }
     }
 
@@ -54,6 +54,12 @@ class FakeRequestExtractorsSpec extends Specification {
         case url"http://localhost/stores/$storeId/orders/$orderId/invoices" =>
           storeId must beEqualTo("123")
           orderId must beEqualTo("234")
+      }
+    }
+
+    "extract a variable with a curly brace from url" in {
+      FakeRequest("GET", "http://localhost/stores/123/") match {
+        case url"http://localhost/stores/${id}/" => id must beEqualTo("123")
       }
     }
   }
