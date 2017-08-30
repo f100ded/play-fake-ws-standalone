@@ -14,6 +14,8 @@ trait FakeRequestExtractors {
 
   val OPTIONS = new RequestMethodExtractor("OPTIONS")
 
+  val PATCH = new RequestMethodExtractor("PATCH")
+
   implicit class FakeRequestContext(val sc: StringContext) {
     val url = new {
       def unapplySeq(r: FakeRequest): Option[Seq[String]] = {

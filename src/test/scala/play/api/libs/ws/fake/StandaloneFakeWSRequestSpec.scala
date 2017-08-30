@@ -23,6 +23,8 @@ class StandaloneFakeWSRequestSpec extends Specification with DefaultBodyWritable
         case PUT(url"http://localhost/put") => FakeResults.Ok("put")
         case HEAD(url"http://localhost/head") => FakeResults.Ok("head")
         case OPTIONS(url"http://localhost/options") => FakeResults.Ok("options")
+        case PATCH(url"http://localhost/patch") => FakeResults.Ok("patch")
+        case DELETE(url"http://localhost/delete") => FakeResults.Ok("delete")
       }
 
       ws.url("http://localhost/get").get.map(_.body) must beEqualTo("get").await
@@ -30,6 +32,8 @@ class StandaloneFakeWSRequestSpec extends Specification with DefaultBodyWritable
       ws.url("http://localhost/put").put("").map(_.body) must beEqualTo("put").await
       ws.url("http://localhost/head").head.map(_.body) must beEqualTo("head").await
       ws.url("http://localhost/options").options.map(_.body) must beEqualTo("options").await
+      ws.url("http://localhost/patch").patch("").map(_.body) must beEqualTo("patch").await
+      ws.url("http://localhost/delete").delete.map(_.body) must beEqualTo("delete").await
     }
 
     "no Content-Type if body is empty" in {
