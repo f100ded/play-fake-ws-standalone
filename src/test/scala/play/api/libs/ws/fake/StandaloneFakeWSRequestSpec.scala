@@ -36,7 +36,7 @@ class StandaloneFakeWSRequestSpec extends Specification with DefaultBodyWritable
       ws.url("http://localhost/delete").delete.map(_.body) must beEqualTo("delete").await
     }
 
-    "no Content-Type if body is empty" in {
+    "not add Content-Type if body is empty" in {
       val ws = StandaloneFakeWSClient { case _ => FakeResults.Ok }
       val r = ws.url("http://localhost/").asInstanceOf[StandaloneFakeWSRequest]
       r.fakeRequest.headers.get("Content-Type") must beNone
@@ -47,7 +47,17 @@ class StandaloneFakeWSRequestSpec extends Specification with DefaultBodyWritable
       val r = ws.url("http://localhost/")
         .withBody("hello world")
         .asInstanceOf[StandaloneFakeWSRequest]
-      r.fakeRequest.headers.get("Content-Type") must beSome(Seq("text/plain"))
+
+      r.contentType must beSome("text/plain")
+    }
+
+    "not change explicitly set Content-Type" in {
+      val ws = StandaloneFakeWSClient { case _ => FakeResults.Ok }
+      val r = ws.url("http://localhost/")
+        .withHttpHeaders("Content-Type" -> "text/special")
+        .withBody("hello world")
+        .asInstanceOf[StandaloneFakeWSRequest]
+      r.fakeRequest.headers.get("Content-Type") must beSome(Seq("text/special"))
     }
 
     "add query string params" in {
