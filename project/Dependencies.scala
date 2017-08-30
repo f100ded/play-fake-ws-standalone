@@ -3,7 +3,7 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    val scala = "2.11.11"
+    val scala = "2.12.2"
     val crossScala = List(scala, "2.12.2")
   }
 
