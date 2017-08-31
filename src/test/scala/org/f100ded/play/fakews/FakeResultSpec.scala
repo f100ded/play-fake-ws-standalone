@@ -3,7 +3,7 @@ package org.f100ded.play.fakews
 import org.specs2.mutable._
 import play.api.libs.ws.DefaultWSCookie
 
-class FakeResultSpec extends Specification with FakeResults {
+class FakeResultSpec extends Specification {
   "FakeResult" should {
     "add cookies" in {
       val result = Ok("string").addCookies(

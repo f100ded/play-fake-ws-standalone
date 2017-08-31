@@ -5,20 +5,16 @@ import play.api.libs.ws.{StandaloneWSClient, StandaloneWSRequest}
 
 import scala.language.implicitConversions
 
-class StandaloneFakeWSClient(implicit mat: Materializer) extends StandaloneWSClient
-  with FakeResults with FakeRequestExtractors {
-
-  type Routes = PartialFunction[FakeRequest, FakeResult]
-
-  var routes: Routes = PartialFunction.empty[FakeRequest, FakeResult]
+class StandaloneFakeWSClient(routes: Routes)
+                            (implicit mat: Materializer) extends StandaloneWSClient {
 
   override def underlying[T]: T = this.asInstanceOf[T]
 
   override def url(url: String): StandaloneWSRequest = StandaloneFakeWSRequest(routes = routes, url = url)
 
   override def close(): Unit = Unit
+}
 
-  implicit def result2routes(result: FakeResult): Routes = {
-    case _ => result
-  }
+object StandaloneFakeWSClient {
+  def apply(routes: Routes)(implicit mat: Materializer): StandaloneFakeWSClient = new StandaloneFakeWSClient(routes)
 }

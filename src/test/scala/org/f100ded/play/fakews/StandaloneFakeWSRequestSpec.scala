@@ -7,7 +7,8 @@ import org.specs2.mutable._
 import org.specs2.specification.core.Fragments
 import play.api.libs.ws.DefaultBodyWritables
 
-class StandaloneFakeWSRequestSpec extends Specification with DefaultBodyWritables with FakeRequestExtractors {
+class StandaloneFakeWSRequestSpec extends Specification with DefaultBodyWritables {
+
   override def map(fragments: => Fragments): Fragments = fragments ^ step(afterAll())
 
   implicit val system = ActorSystem()
@@ -17,16 +18,14 @@ class StandaloneFakeWSRequestSpec extends Specification with DefaultBodyWritable
   "StandaloneFakeWSRequest" should {
 
     "simulate HTTP methods correctly" in { implicit ee: ExecutionEnv =>
-      val ws = new StandaloneFakeWSClient {
-        routes = {
-          case GET(url"http://localhost/get") => FakeResults.Ok("get")
-          case POST(url"http://localhost/post") => FakeResults.Ok("post")
-          case PUT(url"http://localhost/put") => FakeResults.Ok("put")
-          case HEAD(url"http://localhost/head") => FakeResults.Ok("head")
-          case OPTIONS(url"http://localhost/options") => FakeResults.Ok("options")
-          case PATCH(url"http://localhost/patch") => FakeResults.Ok("patch")
-          case DELETE(url"http://localhost/delete") => FakeResults.Ok("delete")
-        }
+      val ws = StandaloneFakeWSClient {
+        case GET(url"http://localhost/get") => Ok("get")
+        case POST(url"http://localhost/post") => Ok("post")
+        case PUT(url"http://localhost/put") => Ok("put")
+        case HEAD(url"http://localhost/head") => Ok("head")
+        case OPTIONS(url"http://localhost/options") => Ok("options")
+        case PATCH(url"http://localhost/patch") => Ok("patch")
+        case DELETE(url"http://localhost/delete") => Ok("delete")
       }
 
       ws.url("http://localhost/get").get.map(_.body) must beEqualTo("get").await
@@ -39,17 +38,13 @@ class StandaloneFakeWSRequestSpec extends Specification with DefaultBodyWritable
     }
 
     "not add Content-Type if body is empty" in {
-      val ws = new StandaloneFakeWSClient {
-        routes = Ok
-      }
+      val ws = StandaloneFakeWSClient(Ok)
       val r = ws.url("http://localhost/").asInstanceOf[StandaloneFakeWSRequest]
       r.fakeRequest.headers.get("Content-Type") must beNone
     }
 
     "set Content-Type to text/plain if body is text" in {
-      val ws = new StandaloneFakeWSClient {
-        routes = Ok
-      }
+      val ws = StandaloneFakeWSClient(Ok)
       val r = ws.url("http://localhost/")
         .withBody("hello world")
         .asInstanceOf[StandaloneFakeWSRequest]
@@ -58,9 +53,7 @@ class StandaloneFakeWSRequestSpec extends Specification with DefaultBodyWritable
     }
 
     "not change explicitly set Content-Type" in {
-      val ws = new StandaloneFakeWSClient {
-        routes = Ok
-      }
+      val ws = StandaloneFakeWSClient(Ok)
       val r = ws.url("http://localhost/")
         .withHttpHeaders("Content-Type" -> "text/special")
         .withBody("hello world")
@@ -69,9 +62,7 @@ class StandaloneFakeWSRequestSpec extends Specification with DefaultBodyWritable
     }
 
     "add query string params" in {
-      val ws = new StandaloneFakeWSClient {
-        routes = Ok
-      }
+      val ws = StandaloneFakeWSClient(Ok)
       val r = ws.url("http://localhost/")
         .withQueryStringParameters(
           "a" -> "1",

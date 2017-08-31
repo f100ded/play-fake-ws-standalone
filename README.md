@@ -14,26 +14,24 @@ Replace LATEST_VERSION with the actual release version from [the releases page](
 
 And then you can start using the library:
 ```scala
-import org.f100ded.play.fakews.StandaloneFakeWSClient
+import org.f100ded.play.fakews._
 
-val ws = new StandaloneFakeWSClient {
-  routes = {
+val ws = StandaloneFakeWSClient {
 
-    case req @ GET(url"http://web-service/stores/$storeId/orders") =>
-      assert(req.headers.contains("Authorization"))
-      assert(req.cookies.exists(_.name == "session_id"))
-      assert(storeId == "123")
-      Ok(fakeOrdersJson)
-    
-    case req @ POST(url"http://web-service/stores/$storeId/orders") =>
-      val order = Json.parse(req.bodyAsString).as[Order]
-      assert(order.id == 234)
-      assert(order.items.count == 3)
-      Created(Json.toJson(order)).addHeaders(
-        "Location" -> s"http://web-service/stores/$storeId/orders/${order.id}"
-      )
+  case req @ GET(url"http://web-service/stores/$storeId/orders") =>
+    assert(req.headers.contains("Authorization"))
+    assert(req.cookies.exists(_.name == "session_id"))
+    assert(storeId == "123")
+    Ok(fakeOrdersJson)
+  
+  case req @ POST(url"http://web-service/stores/$storeId/orders") =>
+    val order = Json.parse(req.bodyAsString).as[Order]
+    assert(order.id == 234)
+    assert(order.items.count == 3)
+    Created(Json.toJson(order)).addHeaders(
+      "Location" -> s"http://web-service/stores/$storeId/orders/${order.id}"
+    )
 
-  }
 }
 
 val client = new MyRESTClient(ws)

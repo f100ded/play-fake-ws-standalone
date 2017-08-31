@@ -2,7 +2,7 @@ package org.f100ded.play.fakews
 
 import org.specs2.mutable._
 
-class FakeRequestExtractorsSpec extends Specification with FakeRequestExtractors {
+class FakeRequestExtractorsSpec extends Specification {
   "extractors" should {
     "extract GET method" in {
       val request = FakeRequest("GET", "http://localhost")
