@@ -1,4 +1,4 @@
-package play.api.libs.ws.fake
+package org.f100ded.play.fakews
 
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source

@@ -1,4 +1,4 @@
-package play.api.libs.ws.fake
+package org.f100ded.play.fakews
 
 import java.net.URI
 import java.util.Base64

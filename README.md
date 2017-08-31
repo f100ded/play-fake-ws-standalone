@@ -8,13 +8,13 @@ Fake Play WS Standalone is a mock library implementing Play WS Standalone interf
 
 To get started, add the following dependency into your project:
 ```scala
-libraryDependencies += "org.f100ded.play-fake-ws-standalone" %% "play-fake-ws-standalone" % "LATEST_VERSION"
+libraryDependencies += "org.f100ded.play" %% "play-fake-ws-standalone" % "LATEST_VERSION"
 ```
 Replace LATEST_VERSION with the actual release version from [the releases page](https://github.com/f100ded/play-fake-ws-standalone/releases).
 
 And then you can start using the library:
 ```scala
-import play.api.libs.ws.fake.StandaloneFakeWSClient
+import org.f100ded.play.fakews.StandaloneFakeWSClient
 
 val ws = new StandaloneFakeWSClient {
   routes = {

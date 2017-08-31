@@ -1,4 +1,4 @@
-package play.api.libs.ws.fake
+package org.f100ded.play.fakews
 
 trait FakeRequestExtractors {
 
@@ -28,6 +28,7 @@ trait FakeRequestExtractors {
   class RequestMethodExtractor(method: String) {
     def unapply(request: FakeRequest): Option[FakeRequest] = Some(request).filter(_.method.equalsIgnoreCase(method))
   }
+
 }
 
 object FakeRequestExtractors extends FakeRequestExtractors

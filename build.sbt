@@ -2,7 +2,7 @@ import Dependencies._
 
 name := "play-fake-ws-standalone"
 
-organization := "org.f100ded.play-fake-ws-standalone"
+organization := "org.f100ded.play"
 
 scalaVersion := Versions.scala
 

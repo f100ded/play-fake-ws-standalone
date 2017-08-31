@@ -1,4 +1,4 @@
-package play.api.libs.ws.fake
+package org.f100ded.play.fakews
 
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
@@ -8,7 +8,7 @@ import play.api.libs.ws.{EmptyBody, InMemoryBody, SourceBody, WSBody}
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-private[fake] object BodyUtils {
+private[fakews] object BodyUtils {
 
   def bodyAsBytes(body: WSBody)(implicit mat: Materializer): ByteString = body match {
     case EmptyBody => ByteString.empty

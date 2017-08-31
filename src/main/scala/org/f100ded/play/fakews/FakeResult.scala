@@ -1,4 +1,4 @@
-package play.api.libs.ws.fake
+package org.f100ded.play.fakews
 
 import play.api.libs.ws.{BodyWritable, EmptyBody, WSBody, WSCookie}
 
