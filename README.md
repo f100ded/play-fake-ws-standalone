@@ -1,4 +1,5 @@
-[![Build status](https://travis-ci.org/f100ded/play-fake-ws-standalone.svg?branch=master)](https://travis-ci.org/f100ded/play-fake-ws-standalone) [![Coverage Status](https://coveralls.io/repos/f100ded/play-fake-ws-standalone/badge.svg?branch=master&service=github)](https://coveralls.io/github/f100ded/play-fake-ws-standalone?branch=master)
+[![Build status](https://travis-ci.org/f100ded/play-fake-ws-standalone.svg?branch=master)](https://travis-ci.org/f100ded/play-fake-ws-standalone)
+[![Maven](https://img.shields.io/maven-central/v/org.f100ded.play/play-fake-ws-standalone_2.12.svg)](http://mvnrepository.com/artifact/org.f100ded.play/play-fake-ws-standalone_2.12)
 
 # Fake Play WS Standalone
 
