@@ -18,7 +18,8 @@ case class StandaloneFakeWSRequest
   body: WSBody = EmptyBody,
   headers: Map[String, Seq[String]] = Map(),
   cookies: Seq[WSCookie] = Seq(),
-  auth: Option[(String, String, WSAuthScheme)] = None
+  auth: Option[(String, String, WSAuthScheme)] = None,
+  proxyServer: Option[WSProxyServer] = None
 )(implicit mat: Materializer) extends StandaloneWSRequest with LazyLogging {
 
   override type Self = StandaloneWSRequest
@@ -44,8 +45,6 @@ case class StandaloneFakeWSRequest
   override def followRedirects: Option[Boolean] = None
 
   override def virtualHost: Option[String] = None
-
-  override def proxyServer: Option[WSProxyServer] = None
 
   override def sign(calc: WSSignatureCalculator): Self = {
     logger.warn(s"Request signature is not supported in play-fake-standalone-mock. Skipping")
@@ -96,7 +95,7 @@ case class StandaloneFakeWSRequest
 
   override def withVirtualHost(vh: String): Self = this
 
-  override def withProxyServer(proxyServer: WSProxyServer): Self = this
+  override def withProxyServer(proxyServer: WSProxyServer): Self = copy(proxyServer = Some(proxyServer))
 
   override def withMethod(method: String): Self = copy(method = method)
 
@@ -129,7 +128,14 @@ case class StandaloneFakeWSRequest
     Future.successful(new StandaloneFakeWSResponse(result))
   }
 
-  lazy val fakeRequest: FakeRequest = FakeRequest(method, uri.toString, BodyUtils.bodyAsBytes(body), headers, cookies)
+  lazy val fakeRequest: FakeRequest = FakeRequest(
+    method = method,
+    url = uri.toString,
+    body = BodyUtils.bodyAsBytes(body),
+    headers = headers,
+    cookies = cookies,
+    proxyServer = proxyServer
+  )
 
   override def stream(): Future[Response] = execute()
 

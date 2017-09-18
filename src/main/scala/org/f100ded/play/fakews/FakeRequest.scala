@@ -1,7 +1,7 @@
 package org.f100ded.play.fakews
 
 import akka.util.ByteString
-import play.api.libs.ws.WSCookie
+import play.api.libs.ws.{WSCookie, WSProxyServer}
 
 case class FakeRequest
 (
@@ -9,7 +9,8 @@ case class FakeRequest
   url: String,
   body: ByteString = ByteString.empty,
   headers: Map[String, Seq[String]] = Map(),
-  cookies: Seq[WSCookie] = Seq()
+  cookies: Seq[WSCookie] = Seq(),
+  proxyServer: Option[WSProxyServer] = None
 ) {
   lazy val bodyAsString: String = body.decodeString(ByteString.UTF_8)
 }
