@@ -15,26 +15,52 @@ Replace LATEST_VERSION with the actual release version from [the releases page](
 
 And then you can start using the library:
 ```scala
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
 import org.f100ded.play.fakews._
+import org.scalatest._
+import play.api.libs.ws.JsonBodyWritables._
 
-val ws = StandaloneFakeWSClient {
+import scala.concurrent.duration.Duration
+import scala.concurrent._
+import scala.language.reflectiveCalls
 
-  case req @ GET(url"http://web-service/stores/$storeId/orders") =>
-    assert(req.headers.contains("Authorization"))
-    assert(req.cookies.exists(_.name == "session_id"))
-    assert(storeId == "123")
-    Ok(fakeOrdersJson)
+/**
+  * Tests MyApi HTTP client implementation
+  */
+class MyApiClientSpec extends AsyncFlatSpec with BeforeAndAfterAll with Matchers {
   
-  case req @ POST(url"http://web-service/stores/$storeId/orders") =>
-    val order = Json.parse(req.bodyAsString).as[Order]
-    assert(order.id == 234)
-    assert(order.items.count == 3)
-    Created(Json.toJson(order)).addHeaders(
-      "Location" -> s"http://web-service/stores/$storeId/orders/${order.id}"
-    )
+  implicit val system = ActorSystem()
+  implicit val materializer = ActorMaterializer()
+  import system.dispatcher
+
+  behavior of "MyApiClient"
+
+  it should "put access token to Authorization header" in {
+    val accessToken = "fake_access_token"
+    val ws = StandaloneFakeWSClient {
+      case request @ GET(url"http://host/v1/foo/$id") =>
+        val fakeAnswer = Json.parse(getClass.getResourceAsStream("api-response-foo.json"))
+        val authorization = request.headers.getOrElse("Authorization", Seq()).mkString
+        
+        // this is here just to demonstrate how you can use URL extractor
+        id shouldBe "1"
+        
+        // verify access token
+        authorization shouldBe s"Bearer $accessToken"
+        
+        Ok(fakeAnswer)
+    }
+
+    val api = new MyApiClient(ws, baseUrl = "http://host/", accessToken = accessToken)
+    api.getFoo(1).map(_ => succeed)
+  }
+
+  // ... more tests
+
+  override def afterAll(): Unit = {
+    Await.result(system.terminate(), Duration.Inf)
+  }
 
 }
-
-val client = new MyRESTClient(ws)
-// ... test the client
 ```
