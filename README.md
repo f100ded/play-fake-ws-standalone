@@ -40,16 +40,13 @@ class MyApiClientSpec extends AsyncFlatSpec with BeforeAndAfterAll with Matchers
     val accessToken = "fake_access_token"
     val ws = StandaloneFakeWSClient {
       case request @ GET(url"http://host/v1/foo/$id") =>
-        val fakeAnswer = Json.parse(getClass.getResourceAsStream("api-response-foo.json"))
-        val authorization = request.headers.getOrElse("Authorization", Seq()).mkString
+        // verify access token
+        request.headers should contain ("Authorization" -> Seq(s"Bearer $accessToken"))
         
         // this is here just to demonstrate how you can use URL extractor
         id shouldBe "1"
         
-        // verify access token
-        authorization shouldBe s"Bearer $accessToken"
-        
-        Ok(fakeAnswer)
+        Ok(FakeAnswers.foo)
     }
 
     val api = new MyApiClient(ws, baseUrl = "http://host/", accessToken = accessToken)
@@ -64,3 +61,13 @@ class MyApiClientSpec extends AsyncFlatSpec with BeforeAndAfterAll with Matchers
 
 }
 ```
+
+## Versions
+
+This project supports the following versions of play-ws
+
+| Fake WS version | Play-WS version |
+|-----------------|-----------------|
+| 1.0.x           | 1.0.x           |
+| 1.1.x           | 1.1.x           |
+
