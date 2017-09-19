@@ -2,6 +2,7 @@ package org.f100ded.play.fakews
 
 import org.specs2.mutable._
 import play.api.libs.ws.DefaultWSCookie
+import play.api.libs.ws.DefaultBodyWritables._
 
 class FakeResultSpec extends Specification {
   "FakeResult" should {
