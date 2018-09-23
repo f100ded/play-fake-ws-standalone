@@ -48,5 +48,3 @@ pomExtra := {
 }
 
 useGpg := true
-
-usePgpKeyHex("7A198644")
