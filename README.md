@@ -62,6 +62,8 @@ class MyApiClientSpec extends AsyncFlatSpec with BeforeAndAfterAll with Matchers
 }
 ```
 
+More examples you can find in [play-fake-ws-standalone-example](https://github.com/f100ded/play-fake-ws-standalone-example) 
+
 ## Versions
 
 This project supports the following versions of play-ws
