@@ -7,6 +7,7 @@ import akka.stream.Materializer
 import com.typesafe.scalalogging.LazyLogging
 import play.api.libs.ws._
 
+import scala.concurrent.duration.Duration
 import scala.concurrent.{Future, duration}
 
 case class StandaloneFakeWSRequest
@@ -104,6 +105,8 @@ case class StandaloneFakeWSRequest
     withBodyAndContentType(writable.transform(body), writable.contentType)
   }
 
+  override def withUrl(url: String): Self = copy(url = url)
+
   override def get(): Future[Response] = execute("GET")
 
   override def patch[T: BodyWritable](body: T): Future[Response] = withBody(body).execute("PATCH")
@@ -125,7 +128,7 @@ case class StandaloneFakeWSRequest
     val result = routes
       .lift(fakeRequest)
       .getOrElse(throw new Exception(s"no route defined for $method $url"))
-    Future.successful(new StandaloneFakeWSResponse(result))
+    Future.successful(new StandaloneFakeWSResponse(uri, result))
   }
 
   lazy val fakeRequest: FakeRequest = FakeRequest(
@@ -141,7 +144,7 @@ case class StandaloneFakeWSRequest
 
   override def calc: Option[WSSignatureCalculator] = None
 
-  override def requestTimeout: Option[Int] = None
+  override def requestTimeout: Option[Duration] = None
 
   private def withBodyAndContentType(wsBody: WSBody, contentType: String): Self = {
     if (headers.exists(_._1.equalsIgnoreCase("Content-Type"))) {

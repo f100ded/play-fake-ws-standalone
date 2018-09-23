@@ -1,12 +1,14 @@
 package org.f100ded.play.fakews
 
+import java.net.URI
+
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import play.api.libs.ws.ahc.AhcUtilities
 import play.api.libs.ws.{DefaultBodyReadables, StandaloneWSResponse, WSCookie}
 
-class StandaloneFakeWSResponse(result: FakeResult)
+class StandaloneFakeWSResponse(val uri: URI, result: FakeResult)
                               (implicit mat: Materializer) extends StandaloneWSResponse
   with DefaultBodyReadables
   with AhcUtilities {
