@@ -15,42 +15,65 @@ Replace LATEST_VERSION with the actual release version from [the releases page](
 
 And then you can start using the library:
 ```scala
+package com.f100ded.play.example
+
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
+import com.f100ded.play.example.model.Bar
 import org.f100ded.play.fakews._
 import org.scalatest._
+import play.api.libs.json.Json
 import play.api.libs.ws.JsonBodyWritables._
 
-import scala.concurrent.duration.Duration
 import scala.concurrent._
+import scala.concurrent.duration.Duration
 import scala.language.reflectiveCalls
 
 /**
-  * Tests MyApi HTTP client implementation
+  * Tests FooApi HTTP client implementation
   */
-class MyApiClientSpec extends AsyncFlatSpec with BeforeAndAfterAll with Matchers {
-  
-  implicit val system = ActorSystem()
-  implicit val materializer = ActorMaterializer()
+class WsFooApiClientTest extends AsyncFunSuite with BeforeAndAfterAll with Matchers {
+
+  implicit val system: ActorSystem = ActorSystem()
+  implicit val mat: ActorMaterializer = ActorMaterializer()
   import system.dispatcher
 
-  behavior of "MyApiClient"
+  private val DUMMY_URL = "http://host/"
+  private val DUMMY_BAR = Bar(1, "bar", 0)
+  private val DUMMY_ACCESS_TOKEN = "dummy_access_token"
 
-  it should "put access token to Authorization header" in {
-    val accessToken = "fake_access_token"
+  test("getBar: regular case") {
     val ws = StandaloneFakeWSClient {
-      case request @ GET(url"http://host/v1/foo/$id") =>
-        // verify access token
-        request.headers should contain ("Authorization" -> Seq(s"Bearer $accessToken"))
-        
-        // this is here just to demonstrate how you can use URL extractor
+      case request@GET(url"http://host/bars/$id") =>
         id shouldBe "1"
-        
-        Ok(FakeAnswers.foo)
+        request.headers should contain("Authorization" -> Seq(s"Bearer $DUMMY_ACCESS_TOKEN"))
+        Ok(Json.toJson(DUMMY_BAR))
     }
 
-    val api = new MyApiClient(ws, baseUrl = "http://host/", accessToken = accessToken)
-    api.getFoo(1).map(_ => succeed)
+    val api = new WsFooApiClient(ws, DUMMY_URL, DUMMY_ACCESS_TOKEN)
+    api.getBar(1).map { result =>
+      result shouldBe Some(DUMMY_BAR)
+    }
+  }
+
+  test("getBar: 404") {
+    val ws = StandaloneFakeWSClient {
+      case GET(url"""http://host/bars/[\d]+""") =>
+        NotFound
+    }
+
+    val api = new WsFooApiClient(ws, DUMMY_URL, DUMMY_ACCESS_TOKEN)
+    api.getBar(1).map { result =>
+      result shouldBe None
+    }
+  }
+
+  test("getBar: unexpected code") {
+    val ws = StandaloneFakeWSClient(InternalServerError)
+    val api = new WsFooApiClient(ws, DUMMY_URL, DUMMY_ACCESS_TOKEN)
+    recoverToSucceededIf[FooApiClientException] {
+      api.getBar(1)
+    }
   }
 
   // ... more tests
