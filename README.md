@@ -47,7 +47,7 @@ class WsFooApiClientTest extends AsyncFunSuite with BeforeAndAfterAll with Match
     val ws = StandaloneFakeWSClient {
       case request@GET(url"http://host/bars/$id") =>
         id shouldBe "1"
-        request.headers should contain("Authorization" -> Seq(s"Bearer $DUMMY_ACCESS_TOKEN"))
+        request.headers("Authorization") shouldBe Seq(s"Bearer $DUMMY_ACCESS_TOKEN")
         Ok(Json.toJson(DUMMY_BAR))
     }
 
