@@ -12,7 +12,7 @@ class StandaloneFakeWSClient(routes: Routes)
 
   override def url(url: String): StandaloneWSRequest = StandaloneFakeWSRequest(routes = routes, url = url)
 
-  override def close(): Unit = Unit
+  override def close(): Unit = ()
 }
 
 object StandaloneFakeWSClient {
