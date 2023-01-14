@@ -11,9 +11,9 @@ class StandaloneFakeWSRequestSpec(implicit ee: ExecutionEnv) extends Specificati
 
   override def map(fragments: => Fragments): Fragments = fragments ^ step(afterAll())
 
-  implicit val system = ActorSystem()
+  implicit val system: ActorSystem = ActorSystem()
 
-  implicit val mat = SystemMaterializer(system)
+  implicit val mat: SystemMaterializer = SystemMaterializer(system)
 
   "StandaloneFakeWSRequest" should {
 
@@ -58,7 +58,7 @@ class StandaloneFakeWSRequestSpec(implicit ee: ExecutionEnv) extends Specificati
         .withHttpHeaders("Content-Type" -> "text/special")
         .withBody("hello world")
         .asInstanceOf[StandaloneFakeWSRequest]
-      r.fakeRequest.headers.get("Content-Type") must beSome(Seq("text/special"))
+      r.fakeRequest.headers.get("Content-Type") must beSome(===(Seq("text/special")))
     }
 
     "add query string params" in {
