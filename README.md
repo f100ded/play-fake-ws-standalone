@@ -17,8 +17,8 @@ And then you can start using the library:
 ```scala
 package com.f100ded.play.example
 
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.ActorMaterializer
 import com.f100ded.play.example.model.Bar
 import org.f100ded.play.fakews._
 import org.scalatest._

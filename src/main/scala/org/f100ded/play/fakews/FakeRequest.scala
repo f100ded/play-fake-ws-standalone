@@ -1,6 +1,6 @@
 package org.f100ded.play.fakews
 
-import akka.util.ByteString
+import org.apache.pekko.util.ByteString
 import play.api.libs.ws.{WSCookie, WSProxyServer}
 
 case class FakeRequest

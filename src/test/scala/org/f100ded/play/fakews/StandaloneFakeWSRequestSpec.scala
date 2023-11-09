@@ -1,7 +1,7 @@
 package org.f100ded.play.fakews
 
-import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, SystemMaterializer}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.{ActorMaterializer, SystemMaterializer}
 import org.specs2.concurrent.ExecutionEnv
 import org.specs2.mutable._
 import org.specs2.specification.core.Fragments

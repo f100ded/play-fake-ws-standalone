@@ -3,7 +3,7 @@ package org.f100ded.play.fakews
 import java.net.URI
 import java.util.Base64
 
-import akka.stream.Materializer
+import org.apache.pekko.stream.Materializer
 import com.typesafe.scalalogging.LazyLogging
 import play.api.libs.ws._
 

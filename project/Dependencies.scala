@@ -9,7 +9,7 @@ object Dependencies {
 
   object Libraries {
     val scalaLogging: ModuleID = "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5"
-    val playWS: ModuleID = "com.typesafe.play" %% "play-ahc-ws-standalone" % "2.2.2"
+    val playWS: ModuleID = "org.playframework" %% "play-ahc-ws-standalone" % "3.0.0"
     val specs2: Seq[ModuleID] = Seq(
       "specs2-core",
       "specs2-junit",
