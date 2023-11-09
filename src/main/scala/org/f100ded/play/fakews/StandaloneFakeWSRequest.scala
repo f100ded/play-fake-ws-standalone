@@ -3,7 +3,7 @@ package org.f100ded.play.fakews
 import java.net.URI
 import java.util.Base64
 
-import akka.stream.Materializer
+import org.apache.pekko.stream.Materializer
 import com.typesafe.scalalogging.LazyLogging
 import play.api.libs.ws._
 
@@ -23,8 +23,8 @@ case class StandaloneFakeWSRequest
   proxyServer: Option[WSProxyServer] = None
 )(implicit mat: Materializer) extends StandaloneWSRequest with LazyLogging {
 
-  override type Self = StandaloneWSRequest
-  override type Response = StandaloneWSResponse
+  override type Self = StandaloneFakeWSRequest
+  override type Response = StandaloneFakeWSResponse
 
   override lazy val uri: URI = {
     val enc = (p: String) => java.net.URLEncoder.encode(p, "utf-8")
@@ -81,6 +81,11 @@ case class StandaloneFakeWSRequest
   }
 
   override def withCookies(cookies: WSCookie*): Self = copy(cookies = cookies)
+
+  override def withDisableUrlEncoding(disableUrlEncoding: Boolean): Self = {
+    logger.warn(s"Disable URL encoding toggle is not supported in play-fake-standalone-mock. Skipping")
+    this
+  }
 
   override def withFollowRedirects(follow: Boolean): Self = this
 

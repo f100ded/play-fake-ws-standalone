@@ -21,7 +21,7 @@ package object fakews {
   val PATCH = new RequestMethodExtractor("PATCH")
 
   implicit class FakeRequestContext(val sc: StringContext) {
-    val url = new {
+    object url {
       def unapplySeq(r: FakeRequest): Option[Seq[String]] = {
         val regexp = sc.parts.mkString("(.+)").r
         regexp.unapplySeq(r.url)

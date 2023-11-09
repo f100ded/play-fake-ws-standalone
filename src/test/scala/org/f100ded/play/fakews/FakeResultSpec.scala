@@ -23,8 +23,8 @@ class FakeResultSpec extends Specification {
         "header2" -> "3"
       )
 
-      result.headers.get("header1") must beSome(Seq("1", "2"))
-      result.headers.get("header2") must beSome(Seq("3"))
+      result.headers.get("header1") must beSome(===(Seq("1", "2")))
+      result.headers.get("header2") must beSome(===(Seq("3")))
     }
   }
 }

@@ -1,23 +1,23 @@
 package org.f100ded.play.fakews
 
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.{ActorMaterializer, SystemMaterializer}
 import org.specs2.concurrent.ExecutionEnv
 import org.specs2.mutable._
 import org.specs2.specification.core.Fragments
 import play.api.libs.ws.DefaultBodyWritables
 
-class StandaloneFakeWSRequestSpec extends Specification with DefaultBodyWritables {
+class StandaloneFakeWSRequestSpec(implicit ee: ExecutionEnv) extends Specification with DefaultBodyWritables {
 
   override def map(fragments: => Fragments): Fragments = fragments ^ step(afterAll())
 
-  implicit val system = ActorSystem()
+  implicit val system: ActorSystem = ActorSystem()
 
-  implicit val mat = ActorMaterializer()
+  implicit val mat: SystemMaterializer = SystemMaterializer(system)
 
   "StandaloneFakeWSRequest" should {
 
-    "simulate HTTP methods correctly" in { implicit ee: ExecutionEnv =>
+    "simulate HTTP methods correctly" in {
       val ws = StandaloneFakeWSClient {
         case GET(url"http://localhost/get") => Ok("get")
         case POST(url"http://localhost/post") => Ok("post")
@@ -28,13 +28,13 @@ class StandaloneFakeWSRequestSpec extends Specification with DefaultBodyWritable
         case DELETE(url"http://localhost/delete") => Ok("delete")
       }
 
-      ws.url("http://localhost/get").get.map(_.body) must beEqualTo("get").await
+      ws.url("http://localhost/get").get().map(_.body) must beEqualTo("get").await
       ws.url("http://localhost/post").post("").map(_.body) must beEqualTo("post").await
       ws.url("http://localhost/put").put("").map(_.body) must beEqualTo("put").await
-      ws.url("http://localhost/head").head.map(_.body) must beEqualTo("head").await
-      ws.url("http://localhost/options").options.map(_.body) must beEqualTo("options").await
+      ws.url("http://localhost/head").head().map(_.body) must beEqualTo("head").await
+      ws.url("http://localhost/options").options().map(_.body) must beEqualTo("options").await
       ws.url("http://localhost/patch").patch("").map(_.body) must beEqualTo("patch").await
-      ws.url("http://localhost/delete").delete.map(_.body) must beEqualTo("delete").await
+      ws.url("http://localhost/delete").delete().map(_.body) must beEqualTo("delete").await
     }
 
     "not add Content-Type if body is empty" in {
@@ -58,7 +58,7 @@ class StandaloneFakeWSRequestSpec extends Specification with DefaultBodyWritable
         .withHttpHeaders("Content-Type" -> "text/special")
         .withBody("hello world")
         .asInstanceOf[StandaloneFakeWSRequest]
-      r.fakeRequest.headers.get("Content-Type") must beSome(Seq("text/special"))
+      r.fakeRequest.headers.get("Content-Type") must beSome(===(Seq("text/special")))
     }
 
     "add query string params" in {
